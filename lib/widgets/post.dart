@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -80,6 +83,7 @@ final String mediaUrl;
 int likeCount;
 Map likes;
 bool isLiked;
+bool showHearth = false;
 
 _PostState({
 this.postId,
@@ -151,7 +155,14 @@ handleLikePost(){
      likeCount += 1; 
      isLiked = true;
      likes[currentUserId] = true;
+     showHearth = true;
     });
+    Timer(Duration(milliseconds: 500), (){
+      setState(() {
+       showHearth = false; 
+      });
+    });
+
   }
 }
 
@@ -162,7 +173,20 @@ buildPostImage(){
       alignment: Alignment.center,
       children: <Widget>[
         cachedNetworkImage(mediaUrl),
-
+        showHearth ? Animator(
+          duration: Duration(milliseconds: 300), 
+          tween: Tween(begin: 0.8, end: 1.4),
+          curve: Curves.elasticOut,
+          cycles: 0,
+          builder: (anim) => Transform.scale(
+            scale: anim.value,
+            child: Icon(
+              Icons.favorite, 
+              size: 80.0, 
+              color: Colors.red,
+            ),
+          ),
+        ) : Text(""),        
       ],
     ),
   );
